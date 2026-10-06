@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>NIDS Dashboard</title>
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 2rem; background: #0f172a; color: #e2e8f0; }
+    h1 { color: #38bdf8; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { padding: 0.5rem; text-align: left; border-bottom: 1px solid #334155; font-size: 0.9rem; }
+    th { background: #1e293b; color: #7dd3fc; }
+    .sev-1 { color: #f87171; font-weight: bold; }
+    .sev-2 { color: #fbbf24; }
+    .sev-3 { color: #4ade80; }
+  </style>
+</head>
+<body>
+  <h1>🛡️ NIDS Live Dashboard</h1>
+  <p>Connected. New alerts appear in real time.</p>
+  <table id="alerts">
+    <thead>
+      <tr>
+        <th>Time</th><th>Sev</th><th>Source</th><th>Destination</th>
+        <th>Proto</th><th>Signature</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for a in alerts %}
+      <tr>
+        <td>{{ a.timestamp[:19] }}</td>
+        <td class="sev-{{ a.severity }}">{{ a.severity }}</td>
+        <td>{{ a.src_ip }}:{{ a.src_port or '' }}</td>
+        <td>{{ a.dest_ip }}:{{ a.dest_port or '' }}</td>
+        <td>{{ a.proto }}</td>
+        <td>{{ a.signature }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <script>
+    const socket = io();
+    socket.on("new_alert", (a) => {
+      const tbody = document.querySelector("#alerts tbody");
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${a.timestamp.slice(0,19)}</td>
+        <td class="sev-${a.severity}">${a.severity}</td>
+        <td>${a.src_ip}:${a.src_port || ''}</td>
+        <td>${a.dest_ip}:${a.dest_port || ''}</td>
+        <td>${a.proto}</td>
+        <td>${a.signature}</td>`;
+      tbody.prepend(row);
+    });
+  </script>
+</body>
+</html>

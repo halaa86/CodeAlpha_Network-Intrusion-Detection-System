@@ -1,0 +1,23 @@
+suricata:
+  eve_log: /var/log/suricata/eve.json
+  fast_log: /var/log/suricata/fast.log
+
+response:
+  enabled: true
+  block_duration_seconds: 3600
+  whitelist:
+    - 127.0.0.1
+    - 192.168.0.0/16
+    - 10.0.0.0/8
+    - 172.16.0.0/12
+  # Only block on these severity levels (1=high, 2=medium, 3=low)
+  block_severities: [1]
+
+dashboard:
+  host: 0.0.0.0
+  port: 5000
+  refresh_interval_seconds: 5
+
+logging:
+  level: INFO
+  file: logs/nids.log
